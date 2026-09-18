@@ -6,168 +6,152 @@ class Nodo {
 public:
     string nombre;
     Nodo* siguiente;
+    Nodo* anterior;
 
     Nodo(string n) {
         nombre = n;
-        siguiente = nullptr;
+        siguiente = NULL;
+        anterior = NULL;
     }
 };
-
 class ListaEnlazada {
 private:
     Nodo* cabeza;
-
+    Nodo* cola;
 public:
     ListaEnlazada() {
-        cabeza = nullptr;
+        cabeza = NULL;
+        cola = NULL;
     }
-
     void registrarInvitado(string nombre) {
-        Nodo* nuevoNodo = new Nodo(nombre);
-
-        if (cabeza == nullptr) {
-            cabeza = nuevoNodo;
+        Nodo* nuevoN = new Nodo(nombre);
+        if (cabeza == NULL) {
+            cabeza = nuevoN;
+			cola = nuevoN;
             return;
-        }
-
-        Nodo* temp = cabeza;
-        while (temp->siguiente != nullptr) {
-            temp = temp->siguiente;
-        }
-
-        temp->siguiente = nuevoNodo;
+        } else {
+        	cola->siguiente = nuevoN;
+            nuevoN->anterior = cola;
+            cola = nuevoN;
+		}
     }
-
-    void mostrarInvitados() {
-        if (cabeza == nullptr) {
-            cout << "La lista de invitados esta vacia." << endl;
+    void mostrarInicio() {
+        if (cabeza == NULL) {
+            cout<<"La lista de invitados esta vacia."<<endl;
             return;
         }
-
         Nodo* temp = cabeza;
         int contador = 1;
-        
-        cout << "\n--- LISTA DE INVITADOS ---" << endl;
-        while (temp != nullptr) {
-            cout << contador << ". " << temp->nombre << endl;
+        cout<<"\n I N V I T A D O S."<<endl;
+        cout<<"(De inicio a fin.)"<<endl;
+        while(temp != NULL){
+            cout<<"Invitado #"<<contador <<". "<< temp->nombre<<endl;
             temp = temp->siguiente;
             contador++;
         }
-        cout << "--------------------------\n" << endl;
+        cout<<"\n"<<endl;
     }
-    void buscarInvitados(string nombre) {
-        if (cabeza == nullptr) {
-            cout << "La lista de invitados esta vacia." << endl;
+    int contar(){
+        int contador = 0;
+        Nodo* temp = cabeza;
+        while(temp != NULL){
+            contador++;
+            temp = temp->siguiente;
+        }
+        return contador;
+	}
+    void mostrarFinal(){
+        if(cola == NULL){
+            cout<<"La lista de invitados esta vacia."<<endl;
             return;
         }
-
+        Nodo* temp = cola;
+        int contador = contar();
+        
+        cout<<"\n I N V I T A D O S"<<endl;
+        cout<<"(De fin a inicio.)"<<endl;
+        while (temp != NULL) {
+            cout<<"Invitado #"<<contador<<". "<<temp->nombre<<endl;
+            temp = temp->anterior;
+            contador = contador-1;
+        }
+        cout<<"\n"<<endl;
+    }
+    void buscarInvitados(string nombre) {
+        if (cabeza == NULL || cola == NULL) {
+            cout<<"La lista de invitados esta vacia."<<endl;
+            return;
+        }
         Nodo* temp = cabeza;
         int contador = 1;
         bool encontrado = false;
-
-        cout << "\n--- RESULTADOS DE BUSQUEDA ---" << endl;
-        while (temp != nullptr) {
+        cout<<"\nRESULTADO DE BUSQUEDA"<<endl;
+        while (temp != NULL) {
             if (temp->nombre.find(nombre) != string::npos) {
-                cout << contador << ". " << temp->nombre << endl;
+                cout<<contador<<". "<<temp->nombre<<endl;
                 encontrado = true;
             }
             temp = temp->siguiente;
             contador++;
         }
-
         if (!encontrado) {
-            cout << "No se encontraron invitados con el nombre: " << nombre << endl;
+            cout<<"No se encontraron invitados con el nombre: "<<nombre <<endl;
         }
-        cout << "-------------------------------\n" << endl;
-    }
-    void eliminarInvitado(string nombre) {
-        if (cabeza == nullptr) {
-            cout << "La lista de invitados esta vacia." << endl;
-            return;
-        }
-
-        Nodo* temp = cabeza;
-        Nodo* anterior = nullptr;
-
-        while (temp != nullptr) {
-            if (temp->nombre == nombre) {
-                if (anterior == nullptr) {
-                    cabeza = temp->siguiente;
-                } else {
-                    anterior->siguiente = temp->siguiente;
-                }
-                delete temp;
-                cout << "Invitado eliminado con exito: " << nombre << endl;
-                return;
-            }
-            anterior = temp;
-            temp = temp->siguiente;
-        }
-        cout << "No se encontro el invitado con el nombre: " << nombre << endl;
-    }
-    void eliminarTodos() {
-        Nodo* temp = cabeza;
-        while (temp != nullptr) {
-            Nodo* siguiente = temp->siguiente;
-            delete temp;
-            temp = siguiente;
-        }
-        cabeza = nullptr;
+        cout<<"\n"<<endl;
     }
 };
 
 int main() {
-    ListaEnlazada fiesta;
+    ListaEnlazada evento;
     int op;
     string nombreInvitado;
+    char reg = 'n';
 
-    cout << "\nBienvenido al Sistema de Gestion de Eventos" << endl;
+    cout<<"\nBienvenido al evento."<<endl;
+    do{
+        cout<<"\n1. Registrar nuevo invitado."<<endl;
+        cout<<"2. Mostrar lista de invitados desde el inicio."<<endl;
+        cout<<"3. Mostrar lista de invitados desde el final."<<endl;
+        cout<<"4. Buscar invitados."<<endl;
+        cout<<"0. Salir."<<endl;
+        cout<<"\nElige una opcion: ";
+        cin>>op;
 
-    do {
-        cout << "\n1. Registrar nuevo invitado" << endl;
-        cout << "2. Mostrar lista de invitados" << endl;
-        cout << "3. Buscar invitados" << endl;
-        cout << "4. Eliminar invitado" << endl;
-        cout << "5. Eliminar todos los invitados" << endl;
-        cout << "0. Salir" << endl;
-        cout << "\nElige una opcion: ";
-        cin >> op;
-
+		cin.ignore();
+		
         switch (op) {
             case 1:
-                cin.ignore(); 
-                cout << "Ingresa el nombre y apellido del invitado: ";
-                getline(cin, nombreInvitado);
-                
-                fiesta.registrarInvitado(nombreInvitado);
-                cout << "Â¡Invitado registrado con exito!\n" << endl;
+            	do {
+	                cout<<"Ingresa el nombre y apellido del invitado: ";
+	                getline(cin, nombreInvitado);
+	                
+	                evento.registrarInvitado(nombreInvitado);
+	                cout<<"Invitado registrado con exito.\n"<<endl;
+	                
+	                cout<<"\n¿Desea añadir otro invitado?"<<endl;
+	                cout<<"Escriba una opcion: (s/n)"<<endl;
+	                cin>>reg;
+	                cin.ignore();
+	        	} while(reg == 's' || reg == 'S');
                 break;
             case 2:
-                fiesta.mostrarInvitados();
+                evento.mostrarInicio();
                 break;
             case 3:
-                cin.ignore();
-                cout << "Ingresa el nombre del invitado a buscar: ";
-                getline(cin, nombreInvitado);
-                fiesta.buscarInvitados(nombreInvitado);
+                evento.mostrarFinal();
                 break;
-            case 4:
-                cin.ignore();
-                cout << "Ingresa el nombre del invitado a eliminar: ";
+			case 4:
+                cout<<"Ingresa el nombre del invitado a buscar: ";
                 getline(cin, nombreInvitado);
-                fiesta.eliminarInvitado(nombreInvitado);
-                break;
-            case 5:
-                fiesta.eliminarTodos();
-                cout << "Todos los invitados han sido eliminados." << endl;
+                evento.buscarInvitados(nombreInvitado);
                 break;
             case 0:
-                cout << "Saliendo del programa..." << endl;
+                cout<<"Saliendo del programa..."<<endl;
                 break;
             default:
-                cout << "Opcion invalida. Por favor, intenta de nuevo." << endl;
+                cout<<"Opcion invalida. Intente de nuevo."<<endl;
+                break;
         }
-    } while (op != 0);
+    } while(op != 0);
     return 0;
 }
-
